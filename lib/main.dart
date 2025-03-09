@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:pidkazki2/CreateSushiSetScreen.dart';
 import 'package:pidkazki2/RecipeSearchScreen.dart';
 import 'package:pidkazki2/SignInScreen.dart';
+import 'package:pidkazki2/SushiSetDetailsScreen.dart';
 import 'package:pidkazki2/firebase_options.dart';
 import 'package:pidkazki2/SavedSushiSetsScreen.dart';
 
@@ -82,10 +83,7 @@ class HomeScreen extends StatelessWidget {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(
-                      builder: (context) => const CreateSushiSetScreen(
-                            availableRolls: [],
-                          )),
+                  MaterialPageRoute(builder: (context) => RecipeSearchScreen()),
                 );
               },
               child: const Text('Создать сет'),
@@ -95,8 +93,7 @@ class HomeScreen extends StatelessWidget {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(
-                      builder: (context) => SavedSushiSetsScreen()),
+                  MaterialPageRoute(builder: (context) => RecipeSearchScreen()),
                 );
               },
               child: const Text('Сеты'),

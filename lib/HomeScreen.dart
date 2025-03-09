@@ -30,9 +30,10 @@ class HomeScreen extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) => const CreateSushiSetScreen(
-                            availableRolls: [],
-                          )),
+                    builder: (context) => const CreateSushiSetScreen(
+                      availableRolls: [],
+                    ),
+                  ),
                 );
               },
               child: const Text('Создать сет'),
@@ -43,7 +44,7 @@ class HomeScreen extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) => SavedSushiSetsScreen()),
+                      builder: (context) => const SavedSushiSetsScreen()),
                 );
               },
               child: const Text('Сеты'),

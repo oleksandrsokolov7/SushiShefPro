@@ -24,8 +24,7 @@ class _SignInScreenState extends State<SignInScreen> {
       );
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(
-            builder: (context) => CreateSushiSetScreen(availableRolls: [])),
+        MaterialPageRoute(builder: (context) => HomeScreen()),
       );
     } catch (e) {
       setState(() {

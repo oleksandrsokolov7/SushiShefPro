@@ -1,9 +1,8 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:pidkazki2/ViewSushiSetScreen.dart';
-
-import 'package:pidkazki2/firebasesetsservice.dart';
 
 class CreateSushiSetScreen extends StatefulWidget {
   const CreateSushiSetScreen({super.key, required List availableRolls});
@@ -14,7 +13,7 @@ class CreateSushiSetScreen extends StatefulWidget {
 
 class _CreateSushiSetScreenState extends State<CreateSushiSetScreen> {
   List<String> _availableRolls = [];
-  final List<String> _selectedRolls = [];
+  List<String> _selectedRolls = [];
   final TextEditingController _setNameController = TextEditingController();
   final TextEditingController _searchController = TextEditingController();
   List<String> _matches = [];
@@ -25,6 +24,7 @@ class _CreateSushiSetScreenState extends State<CreateSushiSetScreen> {
     _loadImageList();
   }
 
+  // Загрузка списка изображений
   Future<void> _loadImageList() async {
     try {
       final manifestContent = await rootBundle.loadString('AssetManifest.json');
@@ -42,6 +42,7 @@ class _CreateSushiSetScreenState extends State<CreateSushiSetScreen> {
     }
   }
 
+  // Поиск по роллам
   void _searchRolls(String query) {
     setState(() {
       _matches = _availableRolls
@@ -50,6 +51,7 @@ class _CreateSushiSetScreenState extends State<CreateSushiSetScreen> {
     });
   }
 
+  // Переключение выбора ролла
   void _toggleRollSelection(String roll) {
     setState(() {
       if (_selectedRolls.contains(roll)) {
@@ -60,13 +62,31 @@ class _CreateSushiSetScreenState extends State<CreateSushiSetScreen> {
     });
   }
 
-  void _createSet() async {
+  // Сохранение сета в SharedPreferences
+  Future<void> _saveSet(String setName, List<String> rolls) async {
+    final prefs = await SharedPreferences.getInstance();
+    final String setData = '$setName|${rolls.join('|')}';
+
+    List<String> currentSets = prefs.getStringList('savedSets') ?? [];
+    currentSets.add(setData);
+    await prefs.setStringList('savedSets', currentSets);
+  }
+
+  // Создание сета
+  void _createSet() {
     if (_setNameController.text.isNotEmpty && _selectedRolls.isNotEmpty) {
-      await saveSet(_setNameController.text, _selectedRolls);
-      // Уведомление об успешном создании
+      // Сохраняем сет
+      _saveSet(_setNameController.text, _selectedRolls);
+
+      // Показываем уведомление о том, что сет был создан
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Сет успешно создан!')),
+        SnackBar(
+          content: Text('Сет "${_setNameController.text}" успешно создан!'),
+          duration: const Duration(seconds: 2),
+        ),
       );
+
+      // Переход к экрану с подробностями сета
       Navigator.push(
         context,
         MaterialPageRoute(
@@ -77,6 +97,7 @@ class _CreateSushiSetScreenState extends State<CreateSushiSetScreen> {
         ),
       );
     } else {
+      // Ошибка, если имя сета пустое или нет выбранных роллов
       showDialog(
         context: context,
         builder: (context) => AlertDialog(
