@@ -46,7 +46,7 @@ Future<void> syncLocalSetsWithFirebase() async {
       .remove('savedSets'); // Очищаем локальный список после синхронизации
 }
 
-Future<List<Map<String, dynamic>>> _loadSetsFromFirebase(
+Future<List<Map<String, dynamic>>> loadSetsFromFirebase(
     bool showOwnSets) async {
   try {
     String userId = FirebaseAuth.instance.currentUser?.uid ?? "unknown_user";

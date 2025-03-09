@@ -27,12 +27,20 @@ class SetRepository {
   Future<void> _saveSetToFirebase(
       String setName, List<String> rolls, String userId) async {
     try {
-      await _firestore.collection('sets').add({
+      String? userId = FirebaseAuth.instance.currentUser?.uid;
+      if (userId == null) {
+        print('Ошибка: Пользователь не авторизован');
+        return;
+      }
+
+      await FirebaseFirestore.instance.collection('sets').add({
         'setName': setName,
         'owner': userId,
         'rolls': rolls,
         'createdAt': Timestamp.now(),
       });
+
+      print('Сет успешно сохранён в Firebase');
     } catch (e) {
       print('Ошибка при сохранении сета в Firebase: $e');
     }

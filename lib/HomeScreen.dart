@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:pidkazki2/CreateSushiSetScreen.dart';
+import 'package:pidkazki2/create_sushi_set_screen.dart';
 import 'package:pidkazki2/RecipeSearchScreen.dart';
 import 'package:pidkazki2/SavedSushiSetsScreen.dart';
 

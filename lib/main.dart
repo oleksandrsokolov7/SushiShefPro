@@ -1,6 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:pidkazki2/CreateSushiSetScreen.dart';
+import 'package:pidkazki2/create_sushi_set_screen.dart';
 import 'package:pidkazki2/RecipeSearchScreen.dart';
 import 'package:pidkazki2/SignInScreen.dart';
 import 'package:pidkazki2/SushiSetDetailsScreen.dart';

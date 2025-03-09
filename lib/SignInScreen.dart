@@ -1,6 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:pidkazki2/CreateSushiSetScreen.dart';
+import 'package:pidkazki2/create_sushi_set_screen.dart';
 import 'package:pidkazki2/HomeScreen.dart';
 
 class SignInScreen extends StatefulWidget {
