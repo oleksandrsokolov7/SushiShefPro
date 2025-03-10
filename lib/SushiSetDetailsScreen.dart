@@ -6,8 +6,7 @@ class SushiSetDetailsScreen extends StatelessWidget {
   final List<String> rolls;
 
   const SushiSetDetailsScreen(
-      {Key? key, required this.setName, required this.rolls})
-      : super(key: key);
+      {super.key, required this.setName, required this.rolls});
 
   @override
   Widget build(BuildContext context) {

@@ -1,26 +1,37 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:pidkazki2/ViewSushiSetScreen.dart';
-import 'package:pidkazki2/firebase_service.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
-class CreateSushiSetScreen extends StatefulWidget {
-  const CreateSushiSetScreen({super.key, required List availableRolls});
+class EditSushiSetScreen extends StatefulWidget {
+  final String setId;
+  final String initialSetName;
+  final List<String> initialRolls;
+
+  const EditSushiSetScreen({
+    super.key,
+    required this.setId,
+    required this.initialSetName,
+    required this.initialRolls,
+  });
 
   @override
-  _CreateSushiSetScreenState createState() => _CreateSushiSetScreenState();
+  _EditSushiSetScreenState createState() => _EditSushiSetScreenState();
 }
 
-class _CreateSushiSetScreenState extends State<CreateSushiSetScreen> {
-  List<String> _availableRolls = [];
-  final List<String> _selectedRolls = [];
+class _EditSushiSetScreenState extends State<EditSushiSetScreen> {
   final TextEditingController _setNameController = TextEditingController();
   final TextEditingController _searchController = TextEditingController();
+  List<String> _availableRolls = [];
+  List<String> _selectedRolls = [];
   List<String> _matches = [];
 
   @override
   void initState() {
     super.initState();
+    _setNameController.text = widget.initialSetName;
+    _selectedRolls = List.from(widget.initialRolls);
     _loadImageList();
   }
 
@@ -59,36 +70,36 @@ class _CreateSushiSetScreenState extends State<CreateSushiSetScreen> {
     });
   }
 
-  void _createSet() async {
-    if (_setNameController.text.isNotEmpty && _selectedRolls.isNotEmpty) {
-      await saveSet(_setNameController.text, _selectedRolls);
-      // Уведомление об успешном создании
+  Future<void> _updateSet() async {
+    if (_setNameController.text.isEmpty || _selectedRolls.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Сет успешно создан!')),
+        const SnackBar(content: Text('Введите название и выберите роллы!')),
       );
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => ViewSushiSetScreen(
-            setName: _setNameController.text,
-            rolls: _selectedRolls,
-          ),
-        ),
+      return;
+    }
+
+    try {
+      String userId = FirebaseAuth.instance.currentUser?.uid ?? "unknown_user";
+
+      await FirebaseFirestore.instance
+          .collection('sets')
+          .doc(widget.setId)
+          .update({
+        'setName': _setNameController.text,
+        'rolls': _selectedRolls,
+        'owner': userId,
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Сет обновлён!')),
       );
-    } else {
-      showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-          title: const Text('Ошибка'),
-          content: const Text(
-              'Пожалуйста, введите название сета и выберите хотя бы один ролл.'),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text('OK'),
-            ),
-          ],
-        ),
+
+      Navigator.pop(
+          context, true); // Вернём true, чтобы обновить экран сохранённых сетов
+    } catch (e) {
+      print('Ошибка при обновлении сета: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Ошибка при обновлении!')),
       );
     }
   }
@@ -96,7 +107,7 @@ class _CreateSushiSetScreenState extends State<CreateSushiSetScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Создать сет')),
+      appBar: AppBar(title: const Text('Редактировать сет')),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -119,7 +130,7 @@ class _CreateSushiSetScreenState extends State<CreateSushiSetScreen> {
               onChanged: _searchRolls,
             ),
             const SizedBox(height: 20),
-            const Text('Выберите роллы для сета:'),
+            const Text('Выбранные роллы:'),
             Expanded(
               child: ListView.builder(
                 itemCount: _matches.length,
@@ -142,8 +153,8 @@ class _CreateSushiSetScreenState extends State<CreateSushiSetScreen> {
             ),
             const SizedBox(height: 20),
             ElevatedButton(
-              onPressed: _createSet,
-              child: const Text('Создать сет'),
+              onPressed: _updateSet,
+              child: const Text('Сохранить изменения'),
             ),
           ],
         ),

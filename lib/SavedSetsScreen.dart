@@ -4,6 +4,8 @@ import 'package:pidkazki2/ViewSushiSetScreen.dart';
 import 'package:pidkazki2/firebasesetssink.dart';
 
 class SavedSetsScreen extends StatefulWidget {
+  const SavedSetsScreen({super.key});
+
   @override
   _SavedSetsScreenState createState() => _SavedSetsScreenState();
 }

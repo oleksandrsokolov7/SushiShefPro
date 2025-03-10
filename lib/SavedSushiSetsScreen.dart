@@ -1,132 +1,178 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:pidkazki2/ViewSushiSetScreen.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:pidkazki2/edit_sushi_set_screen.dart';
 
 class SavedSushiSetsScreen extends StatefulWidget {
   const SavedSushiSetsScreen({super.key});
 
   @override
-  _SavedSushiSetsScreenState createState() => _SavedSushiSetsScreenState();
+  State<SavedSushiSetsScreen> createState() => _SavedSushiSetsScreenState();
 }
 
 class _SavedSushiSetsScreenState extends State<SavedSushiSetsScreen> {
-  List<String> _savedSets = [];
-  List<String> _filteredSets = [];
-  TextEditingController _searchController = TextEditingController();
+  bool showOwnSets = true;
+  String userId = FirebaseAuth.instance.currentUser?.uid ?? "unknown_user";
 
-  @override
-  void initState() {
-    super.initState();
-    _loadSavedSets();
-    _searchController.addListener(_searchSets);
-  }
+  Future<List<Map<String, dynamic>>> loadSetsFromFirebase() async {
+    try {
+      QuerySnapshot snapshot;
 
-  @override
-  void dispose() {
-    _searchController.removeListener(_searchSets);
-    _searchController.dispose();
-    super.dispose();
-  }
+      if (showOwnSets) {
+        snapshot = await FirebaseFirestore.instance
+            .collection('sets')
+            .where('owner', isEqualTo: userId)
+            .get();
+      } else {
+        snapshot = await FirebaseFirestore.instance.collection('sets').get();
+      }
 
-  Future<void> _loadSavedSets() async {
-    final prefs = await SharedPreferences.getInstance();
-    setState(() {
-      _savedSets = prefs.getStringList('savedSets') ?? [];
-      _filteredSets = List.from(_savedSets); // Изначально показываем все сеты
-    });
-  }
-
-  void _searchSets() {
-    String query = _searchController.text.toLowerCase();
-    setState(() {
-      _filteredSets = _savedSets.where((set) {
-        final setName = set.split('|').first.toLowerCase();
-        return setName.contains(query);
+      return snapshot.docs.map((doc) {
+        var data = doc.data() as Map<String, dynamic>;
+        return {
+          'id': doc.id,
+          'setName': data['setName'] ?? 'Без названия',
+          'rolls': List<String>.from(data['rolls'] ?? []),
+          'owner': data['owner'] ?? '',
+        };
       }).toList();
-    });
+    } catch (e) {
+      print('Ошибка при загрузке сетов: $e');
+      return [];
+    }
   }
 
-  Future<void> _deleteSet(int index) async {
-    final prefs = await SharedPreferences.getInstance();
-    _savedSets.removeAt(index);
-    await prefs.setStringList('savedSets', _savedSets);
-    setState(() {
-      _filteredSets = List.from(_savedSets); // Обновляем список с отображением
-    });
+  Future<void> deleteSet(String setId) async {
+    await FirebaseFirestore.instance.collection('sets').doc(setId).delete();
+    setState(() {}); // Обновляем список
   }
 
-  void _viewSetDetails(String setData) {
-    final setName = setData.split('|').first;
-    final rolls = setData.split('|').sublist(1); // Извлекаем список роллов
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) =>
-            ViewSushiSetScreen(setName: setName, rolls: rolls),
-      ),
+  Future<void> editSet(String setId, String currentName) async {
+    TextEditingController nameController =
+        TextEditingController(text: currentName);
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Редактировать сет'),
+          content: TextField(
+            controller: nameController,
+            decoration: const InputDecoration(labelText: 'Новое название сета'),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Отмена'),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                await FirebaseFirestore.instance
+                    .collection('sets')
+                    .doc(setId)
+                    .update({'setName': nameController.text});
+                Navigator.pop(context);
+                setState(() {});
+              },
+              child: const Text('Сохранить'),
+            ),
+          ],
+        );
+      },
     );
+  }
+
+  void _loadSets() {
+    setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Сохранённые сеты')),
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: TextField(
-              controller: _searchController,
-              decoration: const InputDecoration(
-                labelText: 'Поиск сета',
-                border: OutlineInputBorder(),
-              ),
-            ),
-          ),
-          Expanded(
-            child: _filteredSets.isEmpty
-                ? const Center(child: Text('Нет сохранённых сетов'))
-                : ListView.builder(
-                    itemCount: _filteredSets.length,
-                    itemBuilder: (context, index) {
-                      final setData = _filteredSets[index];
-                      final setName = setData.split('|').first;
-
-                      return Dismissible(
-                        key: Key(setData),
-                        direction: DismissDirection.endToStart,
-                        onDismissed: (direction) {
-                          _deleteSet(index);
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text('$setName удалён')),
-                          );
-                        },
-                        background: Container(
-                          color: Colors.red,
-                          alignment: Alignment.centerRight,
-                          padding: const EdgeInsets.symmetric(horizontal: 20),
-                          child: const Icon(
-                            Icons.delete,
-                            color: Colors.white,
-                          ),
-                        ),
-                        child: Card(
-                          elevation: 5,
-                          margin: const EdgeInsets.symmetric(
-                              vertical: 8, horizontal: 16),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: ListTile(
-                            title: Text(setName),
-                            onTap: () => _viewSetDetails(setData),
-                          ),
-                        ),
-                      );
-                    },
-                  ),
+      appBar: AppBar(
+        title: const Text('Сохранённые сеты'),
+        actions: [
+          Switch(
+            value: showOwnSets,
+            onChanged: (value) {
+              setState(() {
+                showOwnSets = value;
+              });
+            },
           ),
         ],
+      ),
+      body: FutureBuilder<List<Map<String, dynamic>>>(
+        future: loadSetsFromFirebase(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          if (snapshot.hasError) {
+            return const Center(child: Text('Ошибка загрузки данных.'));
+          }
+          if (!snapshot.hasData || snapshot.data!.isEmpty) {
+            return const Center(child: Text('Нет доступных сетов.'));
+          }
+
+          List<Map<String, dynamic>> sets = snapshot.data!;
+          return ListView.builder(
+            itemCount: sets.length,
+            itemBuilder: (context, index) {
+              final set = sets[index];
+              bool isOwner = set['owner'] == userId;
+
+              return Card(
+                child: ListTile(
+                  title: Text(set['setName']),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ViewSushiSetScreen(
+                          setName: set['setName'],
+                          rolls: set['rolls'],
+                        ),
+                      ),
+                    );
+                  },
+                  trailing: isOwner
+                      ? Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            IconButton(
+                              icon: const Icon(Icons.edit),
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => EditSushiSetScreen(
+                                      setId: set['id'], // ID сета из Firebase
+                                      initialSetName: set['setName'],
+                                      initialRolls:
+                                          List<String>.from(set['rolls']),
+                                    ),
+                                  ),
+                                ).then((updated) {
+                                  if (updated == true) {
+                                    _loadSets(); // Перезагружаем список сетов
+                                  }
+                                });
+                              },
+                            ),
+                            IconButton(
+                              icon: const Icon(Icons.delete, color: Colors.red),
+                              onPressed: () => deleteSet(set['id']),
+                            ),
+                          ],
+                        )
+                      : null,
+                ),
+              );
+            },
+          );
+        },
       ),
     );
   }
