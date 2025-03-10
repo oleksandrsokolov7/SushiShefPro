@@ -1,8 +1,8 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:pidkazki2/ViewSushiSetScreen.dart';
-import 'package:pidkazki2/firebase_service.dart';
+import 'package:pidkazki2/presentation/screens/ViewSushiSetScreen.dart';
+import 'package:pidkazki2/presentation/screens/firebase_service.dart';
 
 class CreateSushiSetScreen extends StatefulWidget {
   const CreateSushiSetScreen({super.key, required List availableRolls});

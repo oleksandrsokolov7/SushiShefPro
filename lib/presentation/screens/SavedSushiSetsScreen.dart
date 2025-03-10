@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:pidkazki2/ViewSushiSetScreen.dart';
-import 'package:pidkazki2/edit_sushi_set_screen.dart';
+import 'package:pidkazki2/presentation/screens/ViewSushiSetScreen.dart';
+import 'package:pidkazki2/presentation/screens/edit_sushi_set_screen.dart';
 
 class SavedSushiSetsScreen extends StatefulWidget {
   const SavedSushiSetsScreen({super.key});

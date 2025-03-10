@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:pidkazki2/recipe_image_screen.dart';
+import 'package:pidkazki2/presentation/screens/recipe_image_screen.dart';
 
 class SushiSetDetailsScreen extends StatelessWidget {
   final String setName;

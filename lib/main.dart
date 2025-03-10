@@ -1,8 +1,16 @@
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:pidkazki2/RecipeSearchScreen.dart';
-import 'package:pidkazki2/SignInScreen.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:pidkazki2/core/services/authentication_service.dart';
 import 'package:pidkazki2/firebase_options.dart';
+import 'package:pidkazki2/presentation/screens/create_sushi_set_screen.dart';
+import 'package:pidkazki2/presentation/screens/home_screen.dart';
+import 'package:pidkazki2/presentation/screens/recipe_search_screen.dart';
+import 'package:pidkazki2/presentation/screens/saved_sushi_sets_screen.dart';
+import 'package:pidkazki2/presentation/screens/sign_in_screen.dart';
+import 'core/constants/app_constants.dart';
+
+import 'presentation/blocs/auth_bloc.dart';
 
 void main() async {
   // Ensure Firebase is initialized before running the app
@@ -13,195 +21,40 @@ void main() async {
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  const MyApp({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Sushi App',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: SignInScreen(), // Стартуем с экрана входа
-    );
-  }
-}
-
-class SplashScreen extends StatefulWidget {
-  const SplashScreen({super.key});
-
-  @override
-  _SplashScreenState createState() => _SplashScreenState();
-}
-
-class _SplashScreenState extends State<SplashScreen> {
-  @override
-  void initState() {
-    super.initState();
-    Future.delayed(const Duration(seconds: 2), () {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const HomeScreen()),
-      );
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Center(child: CircularProgressIndicator()),
-    );
-  }
-}
-
-class HomeScreen extends StatelessWidget {
-  const HomeScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Суші Рецепти')),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => const RecipeSearchScreen()),
-                );
-              },
-              child: const Text('Роли'),
-            ),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => RecipeSearchScreen()),
-                );
-              },
-              child: const Text('Создать сет'),
-            ),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => RecipeSearchScreen()),
-                );
-              },
-              child: const Text('Сеты'),
-            ),
-          ],
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider<AuthBloc>(
+          create: (context) =>
+              AuthBloc(AuthenticationService())..add(AuthCheckRequested()),
         ),
+      ],
+      child: MaterialApp(
+        title: AppConstants.appName,
+        theme: ThemeData(primarySwatch: Colors.blue),
+        initialRoute: '/',
+        routes: {
+          '/': (context) => BlocBuilder<AuthBloc, AuthState>(
+                builder: (context, state) {
+                  if (state is Authenticated) {
+                    return HomeScreen();
+                  } else {
+                    return SignInScreen();
+                  }
+                },
+              ),
+          '/signIn': (context) => SignInScreen(),
+          '/home': (context) => const HomeScreen(),
+          '/createSushiSet': (context) => CreateSushiSetScreen(
+                availableRolls: [], // Пустой список для примера
+              ),
+          '/savedSushiSets': (context) => SavedSushiSetsScreen(),
+          '/recipeSearch': (context) => RecipeSearchScreen(),
+        },
       ),
     );
   }
 }
-
-// class RecipeSearchScreen extends StatefulWidget {
-//   const RecipeSearchScreen({super.key});
-
-//   @override
-//   _RecipeSearchScreenState createState() => _RecipeSearchScreenState();
-// }
-
-// class _RecipeSearchScreenState extends State<RecipeSearchScreen> {
-//   final TextEditingController _searchController = TextEditingController();
-//   List<String> _availableImages = [];
-//   List<String> _matches = [];
-
-//   @override
-//   void initState() {
-//     super.initState();
-//     _loadImageList();
-//     WakelockPlus.enable();
-//   }
-
-//   @override
-//   void dispose() {
-//     WakelockPlus.disable();
-//     super.dispose();
-//   }
-
-//   Future<void> _loadImageList() async {
-//     try {
-//       final manifestContent = await rootBundle.loadString('AssetManifest.json');
-//       final Map<String, dynamic> manifestMap = json.decode(manifestContent);
-
-//       setState(() {
-//         _availableImages = manifestMap.keys
-//             .where((String key) => key.startsWith('assets/images/'))
-//             .map((String key) => key.split('/').last)
-//             .toList();
-//         _matches = List.from(_availableImages);
-//       });
-//     } catch (e) {
-//       print('Помилка завантаження списку зображень: $e');
-//     }
-//   }
-
-//   void _searchRecipe(String query) {
-//     setState(() {
-//       _matches = _availableImages
-//           .where((image) => image.toLowerCase().contains(query.toLowerCase()))
-//           .toList();
-//     });
-//   }
-
-//   void _openRecipe(String image) {
-//     Navigator.push(
-//       context,
-//       MaterialPageRoute(
-//         builder: (context) => RecipeImageScreen(
-//           imagePath: 'assets/images/$image',
-//           fullScreen: true,
-//         ),
-//       ),
-//     );
-//   }
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(title: const Text('Роли')),
-//       body: Padding(
-//         padding: const EdgeInsets.all(16),
-//         child: Column(
-//           children: [
-//             TextField(
-//               controller: _searchController,
-//               decoration: const InputDecoration(
-//                 labelText: 'Пошук',
-//                 border: OutlineInputBorder(),
-//               ),
-//               onChanged: _searchRecipe,
-//             ),
-//             const SizedBox(height: 20),
-//             Expanded(
-//               child: ListView.builder(
-//                 itemCount: _matches.length,
-//                 itemBuilder: (context, index) {
-//                   String displayName = _matches[index].split('.').first;
-//                   return Card(
-//                     elevation: 5,
-//                     shape: RoundedRectangleBorder(
-//                       borderRadius: BorderRadius.circular(15),
-//                     ),
-//                     child: ListTile(
-//                       title: Text(displayName),
-//                       onTap: () => _openRecipe(_matches[index]),
-//                     ),
-//                   );
-//                 },
-//               ),
-//             ),
-//           ],
-//         ),
-//       ),
-//     );
-//   }
-// }
