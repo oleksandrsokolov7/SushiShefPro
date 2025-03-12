@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -14,26 +15,32 @@ class _ClientInfoScreenState extends State<ClientInfoScreen> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   Future<void> _saveClientInfo() async {
+    final User? user =
+        FirebaseAuth.instance.currentUser; // Отримання поточного користувача
+
+    if (user == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Користувач не авторизований')),
+      );
+      return;
+    }
+
+    String userId = user.uid; // Використовуємо UID користувача
     String name = _nameController.text.trim();
     String phone = _phoneController.text.trim();
 
     if (name.isNotEmpty && phone.isNotEmpty) {
       try {
-        // Отримання ідентифікатора користувача
-        final String userId =
-            'user_${DateTime.now().millisecondsSinceEpoch}'; // Генерація унікального ID
         await _firestore.collection('clients').doc(userId).set({
           'name': name,
           'phone': phone,
-          'createdAt': FieldValue.serverTimestamp(), // Дата створення
+          'email': user.email, // Збереження також email
+          'createdAt': FieldValue.serverTimestamp(),
         });
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Дані клієнта збережено!')),
         );
-        Navigator.pushReplacementNamed(
-          context,
-          '/home',
-        ); // Переходимо на головний екран
+        Navigator.pushReplacementNamed(context, '/clientDashboard');
       } catch (e) {
         ScaffoldMessenger.of(
           context,
