@@ -17,10 +17,6 @@ Future<void> saveSet(String setName, List<String> rolls) async {
 Future<void> saveSetToFirebase(String setName, List<String> rolls) async {
   try {
     String? userId = FirebaseAuth.instance.currentUser?.uid;
-    if (userId == null) {
-      print("Ошибка: пользователь не авторизован");
-      return;
-    }
 
     await FirebaseFirestore.instance.collection('sets').add({
       'setName': setName,
@@ -49,25 +45,24 @@ Future<void> syncLocalSetsWithFirebase() async {
     }
   }
 
-  await prefs
-      .remove('savedSets'); // Очищаем локальный список после синхронизации
+  await prefs.remove(
+    'savedSets',
+  ); // Очищаем локальный список после синхронизации
 }
 
 Future<List<Map<String, dynamic>>> loadSetsFromFirebase(
-    bool showOwnSets) async {
+  bool showOwnSets,
+) async {
   try {
     String? userId = FirebaseAuth.instance.currentUser?.uid;
-    if (userId == null) {
-      print("Ошибка: пользователь не авторизован");
-      return [];
-    }
 
     QuerySnapshot snapshot;
     if (showOwnSets) {
-      snapshot = await FirebaseFirestore.instance
-          .collection('sets')
-          .where('ownerId', isEqualTo: userId)
-          .get();
+      snapshot =
+          await FirebaseFirestore.instance
+              .collection('sets')
+              .where('ownerId', isEqualTo: userId)
+              .get();
     } else {
       snapshot = await FirebaseFirestore.instance.collection('sets').get();
     }

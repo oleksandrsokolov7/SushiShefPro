@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'recipe_search_screen.dart';
-import 'create_sushi_set_screen.dart';
-import 'saved_sushi_sets_screen.dart';
+import 'package:sushi_shef_asistant/presentation/screens/rols/recipe_search_screen.dart';
+
+import 'sets/create_sushi_set_screen.dart';
+import 'sets/saved_sushi_sets_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -40,9 +41,8 @@ class HomeScreen extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => CreateSushiSetScreen(
-                      availableRolls: [],
-                    ),
+                    builder:
+                        (context) => CreateSushiSetScreen(availableRolls: []),
                   ),
                 );
               },
@@ -54,7 +54,8 @@ class HomeScreen extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) => const SavedSushiSetsScreen()),
+                    builder: (context) => const SavedSushiSetsScreen(),
+                  ),
                 );
               },
               child: const Text('Сеты'),

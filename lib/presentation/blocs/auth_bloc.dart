@@ -1,5 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:pidkazki2/core/services/authentication_service.dart';
+import 'package:sushi_shef_asistant/core/services/authentication_service.dart';
 
 abstract class AuthEvent {}
 
@@ -34,7 +34,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   }
 
   Future<void> _checkAuthStatus(
-      AuthCheckRequested event, Emitter<AuthState> emit) async {
+    AuthCheckRequested event,
+    Emitter<AuthState> emit,
+  ) async {
     emit(AuthLoading());
     final user = await _authService.authStateChanges.first;
     if (user != null) {

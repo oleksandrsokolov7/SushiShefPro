@@ -52,7 +52,7 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyAcUNCXQRswrcrH9mI3w6w8GULqk8Ews5s',
-    appId: '1:316361826153:android:719843dda9edf4a23ce7f8',
+    appId: '1:316361826153:android:f9dc4bfd092c9a8f3ce7f8',
     messagingSenderId: '316361826153',
     projectId: 'sushischeffpro',
     storageBucket: 'sushischeffpro.firebasestorage.app',
@@ -60,29 +60,29 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyByG69tAHRsodIjU0jACevsgyQhIhN5sF4',
-    appId: '1:316361826153:ios:6289a8e8b79015403ce7f8',
+    appId: '1:316361826153:ios:22e34241e25935503ce7f8',
     messagingSenderId: '316361826153',
     projectId: 'sushischeffpro',
     storageBucket: 'sushischeffpro.firebasestorage.app',
-    iosBundleId: 'com.example.pidkazki2',
+    iosBundleId: 'com.example.sushiShefAsistant',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
     apiKey: 'AIzaSyByG69tAHRsodIjU0jACevsgyQhIhN5sF4',
-    appId: '1:316361826153:ios:6289a8e8b79015403ce7f8',
+    appId: '1:316361826153:ios:22e34241e25935503ce7f8',
     messagingSenderId: '316361826153',
     projectId: 'sushischeffpro',
     storageBucket: 'sushischeffpro.firebasestorage.app',
-    iosBundleId: 'com.example.pidkazki2',
+    iosBundleId: 'com.example.sushiShefAsistant',
   );
 
   static const FirebaseOptions windows = FirebaseOptions(
     apiKey: 'AIzaSyDnuQfHxi_aeY4wqkAzuO4J5qKWS58DMeE',
-    appId: '1:316361826153:web:398b4cabbcab7e1b3ce7f8',
+    appId: '1:316361826153:web:92e1009adbadeac03ce7f8',
     messagingSenderId: '316361826153',
     projectId: 'sushischeffpro',
     authDomain: 'sushischeffpro.firebaseapp.com',
     storageBucket: 'sushischeffpro.firebasestorage.app',
-    measurementId: 'G-Q9BX752ZMK',
+    measurementId: 'G-C8DGF1L1D0',
   );
 }

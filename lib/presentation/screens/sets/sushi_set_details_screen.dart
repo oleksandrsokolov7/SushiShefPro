@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:pidkazki2/presentation/screens/recipe_image_screen.dart';
+import 'package:sushi_shef_asistant/presentation/screens/rols/recipe_image_screen.dart';
 
 class SushiSetDetailsScreen extends StatelessWidget {
   final String setName;
   final List<String> rolls;
 
-  const SushiSetDetailsScreen(
-      {super.key, required this.setName, required this.rolls});
+  const SushiSetDetailsScreen({
+    super.key,
+    required this.setName,
+    required this.rolls,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -23,8 +26,11 @@ class SushiSetDetailsScreen extends StatelessWidget {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => RecipeImageScreen(
-                      imagePath: 'assets/images/$roll', fullScreen: true),
+                  builder:
+                      (context) => RecipeImageScreen(
+                        imagePath: 'assets/images/$roll',
+                        fullScreen: true,
+                      ),
                 ),
               );
             },

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:pidkazki2/presentation/screens/ViewSushiSetScreen.dart';
-import 'package:pidkazki2/presentation/screens/edit_sushi_set_screen.dart';
+import 'package:sushi_shef_asistant/presentation/screens/sets/view_sushi_set_screen.dart';
+import 'package:sushi_shef_asistant/presentation/screens/sets/edit_sushi_set_screen.dart';
 
 class SavedSushiSetsScreen extends StatefulWidget {
   const SavedSushiSetsScreen({super.key});
@@ -20,10 +20,11 @@ class _SavedSushiSetsScreenState extends State<SavedSushiSetsScreen> {
       QuerySnapshot snapshot;
 
       if (showOwnSets) {
-        snapshot = await FirebaseFirestore.instance
-            .collection('sets')
-            .where('owner', isEqualTo: userId)
-            .get();
+        snapshot =
+            await FirebaseFirestore.instance
+                .collection('sets')
+                .where('owner', isEqualTo: userId)
+                .get();
       } else {
         snapshot = await FirebaseFirestore.instance.collection('sets').get();
       }
@@ -49,8 +50,9 @@ class _SavedSushiSetsScreenState extends State<SavedSushiSetsScreen> {
   }
 
   Future<void> editSet(String setId, String currentName) async {
-    TextEditingController nameController =
-        TextEditingController(text: currentName);
+    TextEditingController nameController = TextEditingController(
+      text: currentName,
+    );
 
     showDialog(
       context: context,
@@ -130,44 +132,52 @@ class _SavedSushiSetsScreenState extends State<SavedSushiSetsScreen> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => ViewSushiSetScreen(
-                          setName: set['setName'],
-                          rolls: set['rolls'],
-                        ),
+                        builder:
+                            (context) => ViewSushiSetScreen(
+                              setName: set['setName'],
+                              rolls: set['rolls'],
+                            ),
                       ),
                     );
                   },
-                  trailing: isOwner
-                      ? Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            IconButton(
-                              icon: const Icon(Icons.edit),
-                              onPressed: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => EditSushiSetScreen(
-                                      setId: set['id'], // ID сета из Firebase
-                                      initialSetName: set['setName'],
-                                      initialRolls:
-                                          List<String>.from(set['rolls']),
+                  trailing:
+                      isOwner
+                          ? Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              IconButton(
+                                icon: const Icon(Icons.edit),
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder:
+                                          (context) => EditSushiSetScreen(
+                                            setId:
+                                                set['id'], // ID сета из Firebase
+                                            initialSetName: set['setName'],
+                                            initialRolls: List<String>.from(
+                                              set['rolls'],
+                                            ),
+                                          ),
                                     ),
-                                  ),
-                                ).then((updated) {
-                                  if (updated == true) {
-                                    _loadSets(); // Перезагружаем список сетов
-                                  }
-                                });
-                              },
-                            ),
-                            IconButton(
-                              icon: const Icon(Icons.delete, color: Colors.red),
-                              onPressed: () => deleteSet(set['id']),
-                            ),
-                          ],
-                        )
-                      : null,
+                                  ).then((updated) {
+                                    if (updated == true) {
+                                      _loadSets(); // Перезагружаем список сетов
+                                    }
+                                  });
+                                },
+                              ),
+                              IconButton(
+                                icon: const Icon(
+                                  Icons.delete,
+                                  color: Colors.red,
+                                ),
+                                onPressed: () => deleteSet(set['id']),
+                              ),
+                            ],
+                          )
+                          : null,
                 ),
               );
             },

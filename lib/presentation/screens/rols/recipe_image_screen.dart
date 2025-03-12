@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart'; // Для управления ориентацией
+import 'package:wakelock_plus/wakelock_plus.dart';
 
 class RecipeImageScreen extends StatefulWidget {
   final String imagePath;
@@ -24,6 +25,8 @@ class _RecipeImageScreenState extends State<RecipeImageScreen> {
       DeviceOrientation.landscapeLeft,
       DeviceOrientation.landscapeRight,
     ]);
+    // Включаем Wakelock
+    WakelockPlus.enable();
   }
 
   @override
@@ -33,6 +36,8 @@ class _RecipeImageScreenState extends State<RecipeImageScreen> {
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,
     ]);
+    // Отключаем Wakelock
+    WakelockPlus.disable();
     super.dispose();
   }
 

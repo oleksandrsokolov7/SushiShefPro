@@ -1,8 +1,8 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:pidkazki2/presentation/screens/ViewSushiSetScreen.dart';
-import 'package:pidkazki2/presentation/screens/firebase_service.dart';
+import 'package:sushi_shef_asistant/presentation/screens/sets/view_sushi_set_screen.dart';
+import 'package:sushi_shef_asistant/core/services/firebase_service.dart';
 
 class CreateSushiSetScreen extends StatefulWidget {
   const CreateSushiSetScreen({super.key, required List availableRolls});
@@ -30,10 +30,11 @@ class _CreateSushiSetScreenState extends State<CreateSushiSetScreen> {
       final Map<String, dynamic> manifestMap = json.decode(manifestContent);
 
       setState(() {
-        _availableRolls = manifestMap.keys
-            .where((String key) => key.startsWith('assets/images/'))
-            .map((String key) => key.split('/').last)
-            .toList();
+        _availableRolls =
+            manifestMap.keys
+                .where((String key) => key.startsWith('assets/images/'))
+                .map((String key) => key.split('/').last)
+                .toList();
         _matches = List.from(_availableRolls);
       });
     } catch (e) {
@@ -43,9 +44,10 @@ class _CreateSushiSetScreenState extends State<CreateSushiSetScreen> {
 
   void _searchRolls(String query) {
     setState(() {
-      _matches = _availableRolls
-          .where((roll) => roll.toLowerCase().contains(query.toLowerCase()))
-          .toList();
+      _matches =
+          _availableRolls
+              .where((roll) => roll.toLowerCase().contains(query.toLowerCase()))
+              .toList();
     });
   }
 
@@ -63,32 +65,35 @@ class _CreateSushiSetScreenState extends State<CreateSushiSetScreen> {
     if (_setNameController.text.isNotEmpty && _selectedRolls.isNotEmpty) {
       await saveSet(_setNameController.text, _selectedRolls);
       // Уведомление об успешном создании
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Сет успешно создан!')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Сет успешно создан!')));
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => ViewSushiSetScreen(
-            setName: _setNameController.text,
-            rolls: _selectedRolls,
-          ),
+          builder:
+              (context) => ViewSushiSetScreen(
+                setName: _setNameController.text,
+                rolls: _selectedRolls,
+              ),
         ),
       );
     } else {
       showDialog(
         context: context,
-        builder: (context) => AlertDialog(
-          title: const Text('Ошибка'),
-          content: const Text(
-              'Пожалуйста, введите название сета и выберите хотя бы один ролл.'),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text('OK'),
+        builder:
+            (context) => AlertDialog(
+              title: const Text('Ошибка'),
+              content: const Text(
+                'Пожалуйста, введите название сета и выберите хотя бы один ролл.',
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('OK'),
+                ),
+              ],
             ),
-          ],
-        ),
       );
     }
   }

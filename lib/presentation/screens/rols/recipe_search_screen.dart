@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'recipe_image_screen.dart';
+import 'package:sushi_shef_asistant/presentation/screens/rols/recipe_image_screen.dart';
 
 class RecipeSearchScreen extends StatefulWidget {
   const RecipeSearchScreen({super.key});
@@ -28,12 +28,14 @@ class _RecipeSearchScreenState extends State<RecipeSearchScreen> {
       final Map<String, dynamic> manifestMap = json.decode(manifestContent);
 
       setState(() {
-        _availableRolls = manifestMap.keys
-            .where((String key) => key.startsWith('assets/images/'))
-            .map((String key) => key.split('/').last)
-            .toList();
-        _filteredRolls =
-            List.from(_availableRolls); // Изначально показываем всё
+        _availableRolls =
+            manifestMap.keys
+                .where((String key) => key.startsWith('assets/images/'))
+                .map((String key) => key.split('/').last)
+                .toList();
+        _filteredRolls = List.from(
+          _availableRolls,
+        ); // Изначально показываем всё
       });
     } catch (e) {
       print('Ошибка загрузки списка роллов: $e');
@@ -43,9 +45,10 @@ class _RecipeSearchScreenState extends State<RecipeSearchScreen> {
   // Фильтрация роллов по запросу
   void _filterRolls(String query) {
     setState(() {
-      _filteredRolls = _availableRolls
-          .where((roll) => roll.toLowerCase().contains(query.toLowerCase()))
-          .toList();
+      _filteredRolls =
+          _availableRolls
+              .where((roll) => roll.toLowerCase().contains(query.toLowerCase()))
+              .toList();
     });
   }
 
@@ -54,10 +57,11 @@ class _RecipeSearchScreenState extends State<RecipeSearchScreen> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => RecipeImageScreen(
-          imagePath: 'assets/images/$roll',
-          fullScreen: true,
-        ),
+        builder:
+            (context) => RecipeImageScreen(
+              imagePath: 'assets/images/$roll',
+              fullScreen: true,
+            ),
       ),
     );
   }
