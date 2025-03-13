@@ -26,6 +26,25 @@
     },
     {
       "client_info": {
+        "mobilesdk_app_id": "1:316361826153:android:f9dc4bfd092c9a8f3ce7f8",
+        "android_client_info": {
+          "package_name": "com.example.sushi_shef_asistant"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAcUNCXQRswrcrH9mI3w6w8GULqk8Ews5s"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
         "mobilesdk_app_id": "1:316361826153:android:7c5a89d5baba4a593ce7f8",
         "android_client_info": {
           "package_name": "com.example.sushi_shef_pro"
