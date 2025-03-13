@@ -1,6 +1,6 @@
 {
-    "name": "pidkazki2",
-    "short_name": "pidkazki2",
+    "name": "sushi_shef_asistant",
+    "short_name": "sushi_shef_asistant",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
