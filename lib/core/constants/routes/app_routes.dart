@@ -12,12 +12,12 @@ class AppRoutes {
     return {
       '/': (_) => const InitialScreen(), // Новий маршрут для перевірки
       '/signIn': (_) => const SignInScreen(),
-
+      '/home': (context) => const HomeScreen(),
       '/createSushiSet': (_) => const CreateSushiSetScreen(availableRolls: []),
       '/savedSushiSets': (_) => const SavedSushiSetsScreen(),
       '/recipeSearch': (_) => const RecipeSearchScreen(),
-      '/clientDashboard': (_) => const HomeScreen(),
-      '/chefDashboard': (_) => const HomeScreen(), // Доданий маршрут
+      '/clientDashboard': (_) => const HomeScreen(), //Тут будем менять
+      '/chefDashboard': (_) => const HomeScreen(), // Тут будем менять
     };
   }
 }

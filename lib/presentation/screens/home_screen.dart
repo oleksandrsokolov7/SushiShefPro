@@ -1,11 +1,25 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:sushi_shef_asistant/presentation/screens/rols/recipe_search_screen.dart';
-
 import 'sets/create_sushi_set_screen.dart';
 import 'sets/saved_sushi_sets_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
+
+  Future<void> signOutAndRedirect(BuildContext context) async {
+    try {
+      await FirebaseAuth.instance.signOut(); // Вихід з облікового запису
+      Navigator.pushReplacementNamed(
+        context,
+        '/signIn',
+      ); // Перехід на екран входу
+    } catch (e) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Помилка виходу: $e')));
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -16,8 +30,7 @@ class HomeScreen extends StatelessWidget {
           IconButton(
             icon: const Icon(Icons.exit_to_app),
             onPressed: () {
-              // Выход из аккаунта (вызов события SignOutRequested)
-              Navigator.pushReplacementNamed(context, '/signIn');
+              signOutAndRedirect(context); // Виклик функції виходу
             },
           ),
         ],
